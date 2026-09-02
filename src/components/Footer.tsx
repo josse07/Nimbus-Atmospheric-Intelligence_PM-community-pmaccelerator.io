@@ -47,7 +47,7 @@ export const Footer: React.FC = () => {
                 <span>About PM Accelerator</span>
               </h3>
               <a
-                href="https://www.linkedin.com/school/pm-accelerator/"
+                href="https://www.linkedin.com/school/pmaccelerator"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 text-xs font-semibold text-sky-400 hover:text-sky-300 transition-colors py-1 self-start sm:self-auto"

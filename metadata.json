@@ -1,0 +1,6 @@
+{
+  "name": "Nimbus Atmospheric Intelligence",
+  "description": "Full-stack web weather platform with real-time conditions, 5-day forecasts, multi-range historical weather logs, Firestore persistence, and bonus geospatial & multimedia integrations.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

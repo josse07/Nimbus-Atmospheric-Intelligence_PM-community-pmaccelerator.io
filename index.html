@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function() {
+        try {
+          var proto = typeof Window !== 'undefined' ? Window.prototype : null;
+          var desc = Object.getOwnPropertyDescriptor(window, 'fetch') || (proto ? Object.getOwnPropertyDescriptor(proto, 'fetch') : null);
+          if (desc && desc.get && !desc.set) {
+            var _currentFetch = window.fetch;
+            Object.defineProperty(window, 'fetch', {
+              get: function() { return _currentFetch; },
+              set: function(val) { _currentFetch = val; },
+              configurable: true,
+              enumerable: true
+            });
+            if (proto) {
+              try {
+                Object.defineProperty(proto, 'fetch', {
+                  get: function() { return _currentFetch; },
+                  set: function(val) { _currentFetch = val; },
+                  configurable: true,
+                  enumerable: true
+                });
+              } catch (err) {}
+            }
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <title>Nimbus Atmospheric Intelligence</title>
+    <meta name="description" content="Full-stack web weather platform with real-time conditions, 5-day forecasts, multi-range historical weather logs, Firestore persistence, and bonus geospatial & multimedia integrations." />
+    <meta property="og:title" content="Nimbus Atmospheric Intelligence" />
+    <meta property="og:description" content="Full-stack web weather platform with real-time conditions, 5-day forecasts, multi-range historical weather logs, Firestore persistence, and bonus geospatial & multimedia integrations." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

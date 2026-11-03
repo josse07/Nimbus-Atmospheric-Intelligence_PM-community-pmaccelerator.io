@@ -1,4 +1,22 @@
 export type TemperatureUnit = 'celsius' | 'fahrenheit';
+export type AppLanguage = 'en' | 'pcm'; // 'en': English (Simple AI), 'pcm': Nigerian Pidgin English (Restricted to Nigeria)
+
+export interface DailyWeatherBriefing {
+  id: string;
+  dateStr: string;
+  greeting: string;
+  headline: string;
+  temperatureText: string;
+  apparentTempText: string;
+  highLowText: string;
+  conditionText: string;
+  rainProbabilityText: string;
+  recommendations: string[];
+  severeAlert: string | null;
+  speechText: string;
+  isUrgent: boolean;
+  language: AppLanguage;
+}
 
 export interface GeocodeResult {
   name: string;
@@ -6,6 +24,7 @@ export interface GeocodeResult {
   latitude: number;
   longitude: number;
   country?: string;
+  countryCode?: string;
   admin1?: string;
   postcode?: string;
   timezone?: string;

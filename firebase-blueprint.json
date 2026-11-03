@@ -1,0 +1,44 @@
+{
+  "entities": {
+    "weatherQuery": {
+      "title": "WeatherQuery",
+      "description": "Logged atmospheric queries and historical weather records",
+      "type": "object",
+      "properties": {
+        "location": { "type": "string", "description": "Human-readable place name" },
+        "latitude": { "type": "number", "description": "Geographical latitude" },
+        "longitude": { "type": "number", "description": "Geographical longitude" },
+        "timestamp": { "type": "string", "description": "ISO timestamp of query" }
+      },
+      "required": ["location", "latitude", "longitude", "timestamp"]
+    },
+    "userProfile": {
+      "title": "UserProfile",
+      "description": "User preferences, saved locations, theme, and widget settings",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "description": "User account email" },
+        "displayName": { "type": "string", "description": "Optional display name" },
+        "temperatureUnit": { "type": "string", "description": "Preferred temperature unit (celsius or fahrenheit)" },
+        "theme": { "type": "string", "description": "Preferred appearance theme (system, dark, or light)" },
+        "language": { "type": "string", "description": "Preferred assistant language" },
+        "widgetEnabled": { "type": "boolean", "description": "Whether home screen widget permission was granted" },
+        "widgetPermission": { "type": "string", "description": "Permission state: granted, denied, or prompt" },
+        "dailyBriefingTime": { "type": "string", "description": "Daily weather briefing schedule" },
+        "hydrationDailyGoalMl": { "type": "number", "description": "Target daily water intake in ml" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp of last profile update" }
+      },
+      "required": ["email", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/weatherQueries/{queryId}": {
+      "schema": "weatherQuery",
+      "description": "Public weather inquiry logs and snapshots"
+    },
+    "/users/{userId}": {
+      "schema": "userProfile",
+      "description": "Private user preferences, session configurations, and widget settings"
+    }
+  }
+}

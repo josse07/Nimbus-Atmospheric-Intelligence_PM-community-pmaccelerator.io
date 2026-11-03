@@ -130,9 +130,11 @@ export const WeatherLogPage: React.FC<WeatherLogPageProps> = ({
       const res = await fetch(
         `/api/bonus/media?location=${encodeURIComponent(record.resolvedPlace || record.rawLocation)}&lat=${record.coordinates?.lat}&lon=${record.coordinates?.lng}`
       );
-      if (res.ok) {
-        const data = await res.json();
-        setBonusMedia(data);
+      if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
+        const data = await res.json().catch(() => null);
+        if (data) {
+          setBonusMedia(data);
+        }
       }
     } catch (err) {
       console.error('Error fetching bonus media:', err);
@@ -187,10 +189,14 @@ export const WeatherLogPage: React.FC<WeatherLogPageProps> = ({
     try {
       // 1. Geocode Location
       const geoRes = await fetch(`/api/geocode?q=${encodeURIComponent(locInput)}`);
-      const geoData = await geoRes.json();
+      const geoType = geoRes.headers.get('content-type') || '';
+      let geoData: any = null;
+      if (geoType.includes('application/json')) {
+        geoData = await geoRes.json().catch(() => null);
+      }
 
-      if (!geoRes.ok || !geoData.exactMatch) {
-        setFormError(geoData.message || "We couldn't find that location — try a nearby city or check spelling.");
+      if (!geoRes.ok || !geoData?.exactMatch) {
+        setFormError(geoData?.message || "We couldn't find that location — try a nearby city or check spelling.");
         setFormSubmitting(false);
         return;
       }
@@ -201,10 +207,14 @@ export const WeatherLogPage: React.FC<WeatherLogPageProps> = ({
       const rangeRes = await fetch(
         `/api/weather/range?lat=${resolved.latitude}&lon=${resolved.longitude}&startDate=${formStartDate}&endDate=${formEndDate}`
       );
-      const rangeData = await rangeRes.json();
+      const rangeType = rangeRes.headers.get('content-type') || '';
+      let rangeData: any = null;
+      if (rangeType.includes('application/json')) {
+        rangeData = await rangeRes.json().catch(() => null);
+      }
 
-      if (!rangeRes.ok) {
-        setFormError(rangeData.message || 'Failed to retrieve atmospheric data for this range.');
+      if (!rangeRes.ok || !rangeData) {
+        setFormError(rangeData?.message || 'Failed to retrieve atmospheric data for this range.');
         setFormSubmitting(false);
         return;
       }

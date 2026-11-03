@@ -61,16 +61,25 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 
     try {
       const res = await fetch(`/api/geocode?q=${encodeURIComponent(term)}`);
-      const data = await res.json();
+      const contentType = res.headers.get('content-type') || '';
+      let data: any = null;
 
-      if (!res.ok) {
-        if (data.error === 'LOCATION_NOT_FOUND') {
+      if (contentType.includes('application/json')) {
+        try {
+          data = await res.json();
+        } catch {
+          data = null;
+        }
+      }
+
+      if (!res.ok || !data) {
+        if (data?.error === 'LOCATION_NOT_FOUND') {
           setErrorMsg(data.message || "We couldn't find that location — try a nearby city or check the spelling");
           if (data.suggestions && data.suggestions.length > 0) {
             setSuggestions(data.suggestions);
           }
         } else {
-          setErrorMsg(data.message || 'Error looking up location. Please try again.');
+          setErrorMsg(data?.message || 'Error looking up location. Please try again.');
         }
         setIsSearching(false);
         return;
@@ -91,28 +100,55 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     }
   };
 
-  // Browser Geolocation button handler
-  const handleUseMyLocation = () => {
+  // Dual-mode Location handler: Browser GPS with automatic IP fallback
+  const handleUseMyLocation = async () => {
     setErrorMsg(null);
     setSuggestions([]);
+    setGeoLocating(true);
+
+    const tryIpFallback = async (reason?: string) => {
+      try {
+        const ipRes = await fetch('/api/ip-location');
+        if (ipRes.ok && ipRes.headers.get('content-type')?.includes('application/json')) {
+          const ipData = await ipRes.json().catch(() => null);
+          if (ipData && ipData.latitude && ipData.longitude) {
+            setQuery(ipData.formattedName || ipData.name);
+            onSelectLocation(ipData);
+            localStorage.setItem('nimbus_user_location', JSON.stringify(ipData));
+            localStorage.setItem('nimbus_location_source', 'ip');
+            return true;
+          }
+        }
+      } catch (e) {
+        console.warn('IP fallback failed:', e);
+      }
+      return false;
+    };
 
     if (!navigator.geolocation) {
-      setErrorMsg('Geolocation is not supported by your current browser.');
+      const recovered = await tryIpFallback('No GPS support');
+      setGeoLocating(false);
+      if (!recovered) {
+        setErrorMsg('Geolocation is not supported by your current browser.');
+      }
       return;
     }
 
-    setGeoLocating(true);
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
         try {
           const revRes = await fetch(`/api/reverse-geocode?lat=${latitude}&lon=${longitude}`);
-          if (revRes.ok) {
-            const revData = await revRes.json();
+          let revData: any = null;
+          if (revRes.ok && revRes.headers.get('content-type')?.includes('application/json')) {
+            revData = await revRes.json().catch(() => null);
+          }
+          if (revData && revData.latitude) {
             setQuery(revData.formattedName || revData.name);
             onSelectLocation(revData);
+            localStorage.setItem('nimbus_user_location', JSON.stringify(revData));
+            localStorage.setItem('nimbus_location_source', 'gps');
           } else {
-            // Fallback coordinate object
             const fallbackLoc: GeocodeResult = {
               name: `Current Location (${latitude.toFixed(3)}, ${longitude.toFixed(3)})`,
               formattedName: `Current Location (${latitude.toFixed(3)}, ${longitude.toFixed(3)})`,
@@ -122,6 +158,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             };
             setQuery(fallbackLoc.name);
             onSelectLocation(fallbackLoc);
+            localStorage.setItem('nimbus_user_location', JSON.stringify(fallbackLoc));
+            localStorage.setItem('nimbus_location_source', 'gps');
           }
         } catch {
           const fallbackLoc: GeocodeResult = {
@@ -132,28 +170,34 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             timezone: 'auto',
           };
           onSelectLocation(fallbackLoc);
+          localStorage.setItem('nimbus_user_location', JSON.stringify(fallbackLoc));
         } finally {
           setGeoLocating(false);
         }
       },
-      (geoError) => {
+      async (geoError) => {
+        // Automatically attempt IP-based location fallback if GPS was denied or timed out
+        const recovered = await tryIpFallback(geoError.message);
         setGeoLocating(false);
-        switch (geoError.code) {
-          case geoError.PERMISSION_DENIED:
-            setErrorMsg('Location access was denied. Please allow location permissions in your browser or search manually.');
-            break;
-          case geoError.POSITION_UNAVAILABLE:
-            setErrorMsg('Location information is unavailable.');
-            break;
-          case geoError.TIMEOUT:
-            setErrorMsg('The request to get your location timed out.');
-            break;
-          default:
-            setErrorMsg('An unknown error occurred while retrieving location.');
-            break;
+
+        if (!recovered) {
+          switch (geoError.code) {
+            case geoError.PERMISSION_DENIED:
+              setErrorMsg('Location access was denied. Please allow permissions or search your city above.');
+              break;
+            case geoError.POSITION_UNAVAILABLE:
+              setErrorMsg('Position unavailable. Please search for your city manually.');
+              break;
+            case geoError.TIMEOUT:
+              setErrorMsg('Location request timed out. Please try searching for your city.');
+              break;
+            default:
+              setErrorMsg('Could not detect device location. Please search for your city.');
+              break;
+          }
         }
       },
-      { timeout: 10000, enableHighAccuracy: true }
+      { timeout: 5000, maximumAge: 60000, enableHighAccuracy: false }
     );
   };
 
@@ -169,6 +213,8 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       timezone: 'auto',
     };
     setQuery(sug.displayText);
+    localStorage.setItem('nimbus_user_location', JSON.stringify(loc));
+    localStorage.setItem('nimbus_location_source', 'search');
     onSelectLocation(loc);
   };
 

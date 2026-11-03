@@ -6,28 +6,44 @@
     <script>
       (function() {
         try {
-          var proto = typeof Window !== 'undefined' ? Window.prototype : null;
-          var desc = Object.getOwnPropertyDescriptor(window, 'fetch') || (proto ? Object.getOwnPropertyDescriptor(proto, 'fetch') : null);
-          if (desc && desc.get && !desc.set) {
-            var _currentFetch = window.fetch;
+          var originalFetch = window.fetch;
+          var activeFetch = typeof originalFetch === 'function' ? originalFetch.bind(window) : originalFetch;
+          var getFetch = function() { return activeFetch; };
+          var setFetch = function(val) { activeFetch = val; };
+
+          try {
             Object.defineProperty(window, 'fetch', {
-              get: function() { return _currentFetch; },
-              set: function(val) { _currentFetch = val; },
+              get: getFetch,
+              set: setFetch,
               configurable: true,
               enumerable: true
             });
-            if (proto) {
-              try {
-                Object.defineProperty(proto, 'fetch', {
-                  get: function() { return _currentFetch; },
-                  set: function(val) { _currentFetch = val; },
-                  configurable: true,
-                  enumerable: true
-                });
-              } catch (err) {}
-            }
+          } catch (e1) {
+            try { window.fetch = activeFetch; } catch (_) {}
           }
-        } catch (e) {}
+
+          if (typeof Window !== 'undefined' && Window.prototype) {
+            try {
+              Object.defineProperty(Window.prototype, 'fetch', {
+                get: getFetch,
+                set: setFetch,
+                configurable: true,
+                enumerable: true
+              });
+            } catch (e2) {}
+          }
+
+          if (typeof globalThis !== 'undefined' && globalThis !== window) {
+            try {
+              Object.defineProperty(globalThis, 'fetch', {
+                get: getFetch,
+                set: setFetch,
+                configurable: true,
+                enumerable: true
+              });
+            } catch (e3) {}
+          }
+        } catch (err) {}
       })();
     </script>
     <title>Nimbus Atmospheric Intelligence</title>

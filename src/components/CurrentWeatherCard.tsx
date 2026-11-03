@@ -87,6 +87,15 @@ export const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
               <span className="text-slate-400 text-xs sm:text-sm">
                 Feels like <strong className="text-slate-200">{formatTemp(current.apparentTemperature, unit)}</strong>
               </span>
+              {current.uvIndex !== undefined && current.uvIndex > 0 && (
+                <>
+                  <span className="text-slate-600">•</span>
+                  <span className="text-amber-300 text-xs sm:text-sm font-semibold flex items-center gap-1 bg-amber-950/60 px-2 py-0.5 rounded-full border border-amber-800/60">
+                    <Sun className="w-3.5 h-3.5 text-amber-400" />
+                    <span>UV {current.uvIndex.toFixed(1)}</span>
+                  </span>
+                </>
+              )}
             </div>
 
             <p className="text-xs text-slate-400">

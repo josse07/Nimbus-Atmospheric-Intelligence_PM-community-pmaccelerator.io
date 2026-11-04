@@ -260,7 +260,7 @@ export function exportSingleRecordAsPDF(record: WeatherLogRecord) {
         </table>
 
         <div class="footer">
-          <div>Nimbus Atmospheric Intelligence • PM Accelerator Technical Assessment</div>
+          <div>Nimbus Atmospheric Intelligence</div>
           <div>Built by Ayoola Balogun</div>
         </div>
 
@@ -406,7 +406,7 @@ export function exportRecordsAsPDF(records: WeatherLogRecord[]) {
         </table>
 
         <div class="footer">
-          <div>Nimbus Atmospheric Intelligence • PM Accelerator Assessment</div>
+          <div>Nimbus Atmospheric Intelligence</div>
           <div>Built by Ayoola Balogun</div>
         </div>
 

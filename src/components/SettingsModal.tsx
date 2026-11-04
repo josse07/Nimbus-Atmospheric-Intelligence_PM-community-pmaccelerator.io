@@ -959,11 +959,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     </div>
                     <div>
                       <h3 className="font-bold text-slate-100 text-sm sm:text-base">
-                        Email Sign-Up &amp; Cloud Sync
+                        Direct Email Sign-Up &amp; Cloud Sync
                       </h3>
                       <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                        Create an account or log in with your email and password to preserve your streak across devices,
-                        remember your home screen widget configuration, and save your daily briefing schedule.
+                        Sign up or log in directly with your email address — no passwords to remember or reset.
+                        Preserves your hydration streak across devices, saves your home screen widget configuration, and syncs your daily weather briefing schedule.
                       </p>
                     </div>
                   </div>
@@ -971,11 +971,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-300">
                     <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 flex items-center gap-2">
                       <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <span>Email &amp; Password only</span>
+                      <span>Direct Email only • No password required</span>
                     </div>
                     <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 flex items-center gap-2">
                       <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <span>No phone or social media needed</span>
+                      <span>No phone numbers or social media</span>
                     </div>
                   </div>
 
@@ -987,14 +987,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                         className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold text-xs shadow-md shadow-sky-500/25 flex items-center gap-2 transition-all"
                       >
                         <UserIcon className="w-4 h-4" />
-                        <span>Create Account</span>
+                        <span>Sign Up with Email</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => onOpenAuthModal('signin')}
                         className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-xs font-semibold transition-colors"
                       >
-                        Sign In
+                        Sign In Directly
                       </button>
                     </div>
                   )}

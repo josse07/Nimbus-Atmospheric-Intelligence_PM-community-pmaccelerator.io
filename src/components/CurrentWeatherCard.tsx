@@ -89,10 +89,13 @@ export const CurrentWeatherCard: React.FC<CurrentWeatherCardProps> = ({
               </span>
               {current.uvIndex !== undefined && current.uvIndex > 0 && (
                 <>
-                  <span className="text-slate-600">•</span>
-                  <span className="text-amber-300 text-xs sm:text-sm font-semibold flex items-center gap-1 bg-amber-950/60 px-2 py-0.5 rounded-full border border-amber-800/60">
-                    <Sun className="w-3.5 h-3.5 text-amber-400" />
-                    <span>UV {current.uvIndex.toFixed(1)}</span>
+                  <span className="text-slate-400 dark:text-slate-600">•</span>
+                  <span
+                    id="current-weather-uv-badge"
+                    className="text-xs sm:text-sm font-bold flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border shadow-sm transition-colors bg-amber-100 text-amber-950 border-amber-300 dark:bg-amber-950/85 dark:text-amber-200 dark:border-amber-600/90"
+                  >
+                    <Sun className="w-3.5 h-3.5 text-amber-800 dark:text-amber-300 shrink-0" />
+                    <span className="tracking-wide font-extrabold">UV {current.uvIndex.toFixed(1)}</span>
                   </span>
                 </>
               )}

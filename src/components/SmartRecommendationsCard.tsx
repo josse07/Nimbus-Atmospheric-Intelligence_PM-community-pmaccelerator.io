@@ -136,22 +136,36 @@ export const SmartRecommendationsCard: React.FC<SmartRecommendationsCardProps> =
           id="heat-alert-banner"
           className={`p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg border transition-all ${
             heatAlertLevel === 'extreme'
-              ? 'bg-gradient-to-r from-rose-950/90 to-amber-950/80 border-rose-700/80 text-rose-100 shadow-rose-950/40'
-              : 'bg-gradient-to-r from-amber-950/80 to-slate-900 border-amber-700/60 text-amber-100 shadow-amber-950/30'
+              ? 'bg-rose-50 border-rose-300 text-rose-950 shadow-rose-950/10 dark:bg-gradient-to-r dark:from-rose-950/90 dark:to-amber-950/80 dark:border-rose-700/80 dark:text-rose-100 dark:shadow-rose-950/40'
+              : 'bg-amber-50 border-amber-300 text-amber-950 shadow-amber-950/10 dark:bg-gradient-to-r dark:from-amber-950/80 dark:to-slate-900 dark:border-amber-700/60 dark:text-amber-100 dark:shadow-amber-950/30'
           }`}
         >
           <div className="flex items-start gap-3">
-            <div className="p-2 rounded-xl bg-rose-900/60 text-rose-300 shrink-0 mt-0.5">
+            <div
+              className={`p-2 rounded-xl shrink-0 mt-0.5 border ${
+                heatAlertLevel === 'extreme'
+                  ? 'bg-rose-100 text-rose-700 border-rose-300 dark:bg-rose-900/60 dark:text-rose-300 dark:border-rose-800/60'
+                  : 'bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-900/60 dark:text-amber-300 dark:border-amber-800/60'
+              }`}
+            >
               <Flame className="w-5 h-5 animate-pulse" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-rose-900/90 text-rose-200 border border-rose-700">
+              <div className="flex flex-wrap items-center gap-2">
+                <span
+                  className={`text-xs font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-sm border ${
+                    heatAlertLevel === 'extreme'
+                      ? 'bg-rose-600 text-white border-rose-700 dark:bg-rose-900/90 dark:text-rose-100 dark:border-rose-700'
+                      : 'bg-amber-600 text-white border-amber-700 dark:bg-amber-900/90 dark:text-amber-100 dark:border-amber-700'
+                  }`}
+                >
                   {heatAlertLevel === 'extreme' ? 'Extreme Heat Advisory' : 'Heat Warning'}
                 </span>
-                <span className="text-xs text-amber-200/80">Adaptive Hydration Triggered</span>
+                <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-amber-100/90 text-amber-950 border border-amber-300 dark:bg-amber-950/80 dark:text-amber-200 dark:border-amber-800/80 tracking-tight">
+                  Adaptive Hydration Triggered
+                </span>
               </div>
-              <p className="text-xs sm:text-sm font-medium mt-1 text-slate-100">
+              <p className="text-xs sm:text-sm font-semibold mt-1 text-slate-900 dark:text-slate-100">
                 {heatAdvisoryText}
               </p>
             </div>

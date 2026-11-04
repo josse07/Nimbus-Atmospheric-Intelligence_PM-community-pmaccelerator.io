@@ -567,7 +567,7 @@ export default function App() {
         initialMode={authModalMode}
       />
 
-      {/* Global Branding & PM Accelerator Footer */}
+      {/* Global Branding & Creator Profile Footer */}
       <Footer />
     </div>
   );

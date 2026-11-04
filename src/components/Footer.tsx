@@ -1,5 +1,5 @@
 import React from 'react';
-import { CloudLightning, ExternalLink, ShieldCheck, UserCheck, Sparkles } from 'lucide-react';
+import { CloudLightning, ExternalLink, UserCheck, Sparkles, Linkedin } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
@@ -39,32 +39,34 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* About PM Accelerator Blurb */}
+          {/* About Ayoola Balogun & LinkedIn Information */}
           <div className="md:col-span-7 space-y-3 bg-slate-900/60 border border-slate-800/90 p-5 sm:p-6 rounded-2xl relative overflow-hidden">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/60 pb-3">
               <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-indigo-400" />
-                <span>About PM Accelerator</span>
+                <Sparkles className="w-4 h-4 text-sky-400" />
+                <span>About Ayoola Balogun</span>
               </h3>
               <a
-                href="https://www.linkedin.com/school/pmaccelerator"
+                href="https://www.linkedin.com/in/ayoola-splashtech/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-sky-400 hover:text-sky-300 transition-colors py-1 self-start sm:self-auto"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-sky-400 hover:text-sky-300 transition-colors py-1 self-start sm:self-auto group"
               >
-                <span>PM Accelerator on LinkedIn</span>
+                <Linkedin className="w-3.5 h-3.5 text-sky-400 group-hover:scale-110 transition-transform" />
+                <span>Ayoola on LinkedIn</span>
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
             </div>
 
-            <p className="text-xs sm:text-[13px] text-slate-300 leading-relaxed">
-              PM Accelerator is the premier learning hub and career community dedicated to helping ambitious product leaders master real-world AI, technical strategy, and product execution. Through hands-on product builds, industry mentorship, and actionable coaching, PM Accelerator empowers engineers and product managers to transition into top-tier tech roles.
+            <p className="text-xs sm:text-[13px] text-slate-300 leading-relaxed font-normal">
+              I build systems where code, design, and innovation connect, from AI automation to interactive web experiences. Passionate about turning complex ideas into scalable results that help brands and businesses thrive.
             </p>
 
-            <div className="pt-1 flex flex-wrap items-center gap-2 text-[11px] text-slate-400">
-              <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300">Product Leadership</span>
-              <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300">AI Product Execution</span>
-              <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300">Career Mentorship</span>
+            <div className="pt-1 flex flex-wrap items-center gap-2 text-[11px]">
+              <span className="px-2.5 py-0.5 rounded-full bg-slate-800/80 text-sky-300 border border-slate-700/80 font-medium">AI Automation</span>
+              <span className="px-2.5 py-0.5 rounded-full bg-slate-800/80 text-sky-300 border border-slate-700/80 font-medium">Interactive Web Experiences</span>
+              <span className="px-2.5 py-0.5 rounded-full bg-slate-800/80 text-sky-300 border border-slate-700/80 font-medium">Scalable Results</span>
+              <span className="px-2.5 py-0.5 rounded-full bg-slate-800/80 text-slate-300 border border-slate-700/80 font-medium">Systems Engineering</span>
             </div>
           </div>
         </div>

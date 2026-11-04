@@ -31,7 +31,7 @@ html.light .bg-slate-950\/95 {
 
 /* 2. Neutralize Dark Gradients on All Major Cards and Hero Sections */
 html.light #current-weather-hero,
-html.light #smart-recommendations-section > div,
+html.light #smart-recommendations-section > div:not(#heat-alert-banner),
 html.light #voice-assistant-controller,
 html.light #hydration-reminder-section > div,
 html.light #daily-weather-briefing-card,
@@ -381,3 +381,42 @@ html.light .shadow-xl,
 html.light .shadow-lg {
   box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03) !important;
 }
+
+/* 11. High-Contrast Focus for UV Badge & Heat Alert Banner (User Requested) */
+#current-weather-uv-badge {
+  display: inline-flex;
+  align-items: center;
+}
+
+html.light #current-weather-uv-badge {
+  background-color: #fef3c7 !important; /* amber-100 */
+  color: #78350f !important;            /* amber-950 for sharp readability */
+  border: 1px solid #fcd34d !important; /* amber-300 */
+}
+
+html.light #current-weather-uv-badge svg {
+  color: #92400e !important;            /* amber-800 */
+}
+
+html.dark #current-weather-uv-badge {
+  background-color: rgba(69, 26, 3, 0.85) !important; /* amber-950 */
+  color: #fef08a !important;                           /* bright gold */
+  border: 1px solid #b45309 !important;               /* amber-700 */
+}
+
+html.dark #current-weather-uv-badge svg {
+  color: #fcd34d !important;
+}
+
+/* Heat Alert Banner Contrast */
+html.light #heat-alert-banner {
+  background-color: #fffbeb !important; /* amber-50 */
+  border-color: #fcd34d !important;     /* amber-300 */
+  color: #78350f !important;
+  box-shadow: 0 4px 15px -1px rgba(217, 119, 6, 0.12) !important;
+}
+
+html.light #heat-alert-banner p {
+  color: #0f172a !important; /* slate-900 high-contrast body */
+}
+

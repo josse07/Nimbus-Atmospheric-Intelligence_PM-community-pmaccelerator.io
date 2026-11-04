@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Mail, Lock, User as UserIcon, Eye, EyeOff, Loader2, Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
+import { X, Mail, User as UserIcon, Loader2, Sparkles, CheckCircle2, AlertCircle, ArrowRight, ShieldCheck, Zap } from 'lucide-react';
 import { useAuth } from '../lib/authContext';
 
 interface AuthModalProps {
@@ -11,15 +11,11 @@ interface AuthModalProps {
 export const AuthModal: React.FC<AuthModalProps> = ({
   isOpen,
   onClose,
-  initialMode = 'signin'
+  initialMode: _initialMode = 'signup'
 }) => {
-  const { signInWithEmail, signUpWithEmail } = useAuth();
-  const [mode, setMode] = useState<'signin' | 'signup'>(initialMode);
+  const { signInDirectWithEmail } = useAuth();
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -31,54 +27,31 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setErrorMsg(null);
     setSuccessMsg(null);
 
-    const cleanEmail = email.trim();
+    const cleanEmail = email.trim().toLowerCase();
     if (!cleanEmail) {
       setErrorMsg('Please enter your email address.');
       return;
     }
-    if (!password) {
-      setErrorMsg('Please enter your password.');
-      return;
-    }
 
-    if (mode === 'signup') {
-      if (password.length < 6) {
-        setErrorMsg('Password must be at least 6 characters long.');
-        return;
-      }
-      if (password !== confirmPassword) {
-        setErrorMsg('Passwords do not match. Please re-check.');
-        return;
-      }
+    if (!cleanEmail.includes('@') || !cleanEmail.includes('.')) {
+      setErrorMsg('Please enter a valid email address (e.g. name@example.com).');
+      return;
     }
 
     setIsSubmitting(true);
     try {
-      if (mode === 'signup') {
-        await signUpWithEmail(cleanEmail, password, displayName);
-        setSuccessMsg('Account created successfully! Welcome to Nimbus.');
+      const res = await signInDirectWithEmail(cleanEmail, displayName);
+      if (res.isNewUser) {
+        setSuccessMsg(`Welcome to Nimbus, ${res.user.displayName || 'Friend'}! Your account has been created.`);
       } else {
-        await signInWithEmail(cleanEmail, password);
-        setSuccessMsg('Signed in successfully.');
+        setSuccessMsg(`Welcome back, ${res.user.displayName || 'Member'}! Signed in successfully.`);
       }
+
       setTimeout(() => {
         onClose();
-      }, 700);
+      }, 850);
     } catch (err: any) {
-      const code = err?.code || '';
-      if (code === 'auth/email-already-in-use') {
-        setErrorMsg('This email is already registered. Please switch to Sign In.');
-      } else if (code === 'auth/invalid-email') {
-        setErrorMsg('Invalid email format. Please check the address.');
-      } else if (code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
-        setErrorMsg('Incorrect email or password. Please try again.');
-      } else if (code === 'auth/user-not-found') {
-        setErrorMsg('No account found with this email. Please create an account.');
-      } else if (code === 'auth/weak-password') {
-        setErrorMsg('Password is too weak. Please use at least 6 characters.');
-      } else {
-        setErrorMsg(err.message || 'Authentication failed. Please try again.');
-      }
+      setErrorMsg(err.message || 'Unable to sign in with this email. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -93,17 +66,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         {/* Header */}
         <div className="px-6 pt-6 pb-4 border-b border-slate-800/80 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-sky-500/20">
-              <Sparkles className="w-4 h-4 text-sky-100" />
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-sky-500/20 shrink-0">
+              <Sparkles className="w-5 h-5 text-sky-100" />
             </div>
             <div>
-              <h3 className="text-base sm:text-lg font-bold text-slate-100">
-                {mode === 'signin' ? 'Sign In to Nimbus' : 'Create Free Account'}
-              </h3>
-              <p className="text-xs text-slate-400">
-                {mode === 'signin'
-                  ? 'Access your saved preferences and wellness habits'
-                  : 'Sync your daily briefings, widgets & hydration records'}
+              <div className="flex items-center gap-2">
+                <h3 className="text-base sm:text-lg font-bold text-slate-100">
+                  Direct Email Access
+                </h3>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-800">
+                  No Password
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Sign up or log in directly with just your email
               </p>
             </div>
           </div>
@@ -115,36 +91,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </button>
         </div>
 
-        {/* Tab switch */}
-        <div className="p-2 mx-6 mt-4 bg-slate-950/70 rounded-xl border border-slate-800 flex items-center text-xs font-semibold">
-          <button
-            type="button"
-            onClick={() => {
-              setMode('signin');
-              setErrorMsg(null);
-            }}
-            className={`flex-1 py-2 rounded-lg transition-all ${
-              mode === 'signin'
-                ? 'bg-sky-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            Sign In
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setMode('signup');
-              setErrorMsg(null);
-            }}
-            className={`flex-1 py-2 rounded-lg transition-all ${
-              mode === 'signup'
-                ? 'bg-sky-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            Create Account
-          </button>
+        {/* Feature Highlights Banner */}
+        <div className="mx-6 mt-4 p-3 rounded-xl bg-sky-950/40 border border-sky-800/50 flex items-center gap-2.5 text-xs text-sky-200">
+          <Zap className="w-4 h-4 text-sky-400 shrink-0" />
+          <span>
+            Instant sign-up without password creation, authenticators, or social accounts.
+          </span>
         </div>
 
         {/* Form Body */}
@@ -163,108 +115,77 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
           )}
 
-          {mode === 'signup' && (
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                Full Name (Optional)
-              </label>
-              <div className="relative">
-                <UserIcon className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  placeholder="e.g. Alex Johnson"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2.5 bg-slate-950/80 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-sky-500 transition-colors"
-                />
-              </div>
-            </div>
-          )}
-
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5">
-              Email Address
+            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              Email Address <span className="text-rose-400">*</span>
             </label>
             <div className="relative">
               <Mail className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="email"
                 required
-                placeholder="you@example.com"
+                autoFocus
+                placeholder="your.email@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-9 pr-3 py-2.5 bg-slate-950/80 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-sky-500 transition-colors"
               />
             </div>
+            <p className="text-[11px] text-slate-500 mt-1">
+              Used to sync your weather records, widgets &amp; hydration goals across devices.
+            </p>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5">
-              Password
+            <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              Your Name / Display Name <span className="text-slate-500 font-normal">(Optional)</span>
             </label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+              <UserIcon className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
-                type={showPassword ? 'text' : 'password'}
-                required
-                placeholder="At least 6 characters"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-9 pr-10 py-2.5 bg-slate-950/80 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-sky-500 transition-colors"
+                type="text"
+                placeholder="e.g. Ayo"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                className="w-full pl-9 pr-3 py-2.5 bg-slate-950/80 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-sky-500 transition-colors"
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
-              >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
             </div>
           </div>
-
-          {mode === 'signup' && (
-            <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1.5">
-                Confirm Password
-              </label>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  placeholder="Repeat your password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2.5 bg-slate-950/80 border border-slate-800 rounded-xl text-xs sm:text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-sky-500 transition-colors"
-                />
-              </div>
-            </div>
-          )}
 
           <div className="pt-2">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-sky-500/25 flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-sky-500/25 flex items-center justify-center gap-2 transition-all disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Processing...</span>
+                  <span>Signing In with Email...</span>
                 </>
-              ) : mode === 'signin' ? (
-                'Sign In'
               ) : (
-                'Create Account'
+                <>
+                  <span>Sign Up / Sign In Directly</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
               )}
             </button>
           </div>
 
-          <p className="text-[11px] text-slate-500 text-center pt-2">
-            🔒 Private & Secure. No phone numbers or social media required.
-          </p>
+          {/* Value Props */}
+          <div className="pt-2 border-t border-slate-800/80 space-y-1.5 text-[11px] text-slate-400">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span>Passwordless: No passwords to remember, compromise, or reset</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+              <span>Cloud Firestore sync for personalized weather alerts &amp; streaks</span>
+            </div>
+          </div>
         </form>
       </div>
     </div>
   );
 };
+
